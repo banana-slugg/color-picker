@@ -32,15 +32,17 @@ func LoadImageFile(filename string) *os.File {
 	return img
 }
 
-func DecodeImage(file *os.File) {
+func DecodeImage(file *os.File) string {
 	img, err := jpeg.Decode(file)
 	if err != nil {
 		log.Fatal("Unable to decode jpeg")
 	}
 	defer file.Close()
 
-	fmt.Printf("%v\n: ", img.Bounds())
-	color := color.NRGBAModel.Convert(img.At(1, 1))
-	fmt.Println(color)
+	color := color.NRGBAModel.Convert(img.At(625, 456))
+
+	width := img.Bounds().Max.X - 1 //img.Bounds() is zero indexed, and the max is not inclusive, so minus 1
+	height := img.Bounds().Max.Y - 1
+	return fmt.Sprintf("width: %v\nheight: %v\nRGB: %v", width, height, color)
 
 }
