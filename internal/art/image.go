@@ -109,7 +109,7 @@ func DetermineMostCommonColor(colors []RGB) string {
 	max := 0
 
 	for k, v := range freq {
-		if v > max {
+		if max < v {
 			max = v
 			name = k
 		}

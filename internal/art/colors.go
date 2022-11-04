@@ -18,20 +18,21 @@ func (c RGB) PrintValues() {
 }
 
 func (c RGB) DetermineColor() string {
-	// find the max distance between the RGB values
+	thresh := 65
 	r := c.Red
 	g := c.Green
 	b := c.Blue
-	maxVal := util.Max(r, g, b)
+	max := util.Max(r, g, b)
+	avg := (r + g + b) / 3
 
 	rg := math.Abs(float64(r - g))
 	rb := math.Abs(float64(r - b))
 	gb := math.Abs(float64(g - b))
 
-	maxDiff := util.Max(rg, rb, gb)
+	diff := util.Max(rg, rb, gb)
 
-	if maxDiff <= 30 {
-		if maxVal < 70 {
+	if diff <= 25 {
+		if max < uint8(thresh) || avg < uint8(thresh) {
 			return "black"
 		} else {
 			return "white"
@@ -46,6 +47,9 @@ func (c RGB) DetermineColor() string {
 		return "green"
 	}
 
-	return "blue"
+	if b >= util.Max(r, g) {
+		return "blue"
+	}
 
+	return "black"
 }
