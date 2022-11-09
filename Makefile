@@ -1,5 +1,10 @@
-tests:
-	@go test ./test/...
+build:
+	@go build -o ./bin/color-picker ./cmd/...
 
-run:
-	@go run ./...
+run: build
+	@./bin/color-picker
+
+tests:
+	@go test -v ./test/...
+
+

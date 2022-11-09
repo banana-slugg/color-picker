@@ -9,41 +9,45 @@ import (
 
 func main() {
 	colors := [5]string{"white", "blue", "black", "red", "green"}
+	for group := 0; group < 10; group++ {
+		groupFrequencyAcc := 0
+		groupAverageAcc := 0
+		averageChan := make(chan string)
+		frequencyChan := make(chan string)
+		for _, color := range colors {
+			path := fmt.Sprintf("./assets/group-%v/validation/%v", group, color)
+			files := util.FilesFromDir(path)
+			for _, f := range files {
+				file := fmt.Sprintf("%v/%v", path, f)
+				go runner(file, color, averageChan, frequencyChan)
+			}
 
-	for _, color := range colors {
-		path := "./assets/" + color
-		files := util.FilesFromDir(path)
-		avg := 0
-		freq := 0
-		resAvg := make(chan string)
-		resFreq := make(chan string)
-		for _, v := range files {
-			go func(v string) {
-				filename := fmt.Sprintf("./assets/%v/%v", color, v)
-				img := art.MakeImage(filename)
-				freq := art.DetermineMostCommonColor(img.Colors)
-
-				resAvg <- img.AverageColor.DetermineColor()
-				resFreq <- freq
-			}(v)
-		}
-
-		for i := 0; i < 2000; i++ {
-			select {
-			case a := <-resAvg:
-				if a == color {
-					avg++
-				}
-			case f := <-resFreq:
-				if f == color {
-					freq++
+			for i := 0; i < 200; i++ {
+				select {
+				case a := <-averageChan:
+					if a == color {
+						groupAverageAcc++
+					}
+				case f := <-frequencyChan:
+					if f == color {
+						groupFrequencyAcc++
+					}
 				}
 			}
-		}
 
-		percentAvg := float64(avg) / 10.0
-		percentFreq := float64(freq) / 10.0
-		fmt.Printf("%v:\t Average:%v%%\t Frequency:%v%%\n", color, percentAvg, percentFreq)
+		}
+		percentAvg := float64(groupAverageAcc) / 5
+		percentFreq := float64(groupFrequencyAcc) / 5
+
+		fmt.Printf("Group %v:\t Average:%v%%\t Frequency:%v%%\n", group, percentAvg, percentFreq)
 	}
 
+}
+
+func runner(filename string, color string, resAvg chan string, resFreq chan string) {
+	img := art.MakeImage(filename)
+	freq := art.DetermineMostCommonColor(img.Colors)
+
+	resAvg <- img.AverageColor.DetermineColor()
+	resFreq <- freq
 }

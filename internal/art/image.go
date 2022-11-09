@@ -37,7 +37,7 @@ func loadImageFile(filename string) *os.File {
 	img, err := os.Open(filename)
 
 	if err != nil {
-		log.Fatal("Can't open jpeg")
+		log.Fatal("Can't open jpeg: ", err)
 	}
 	return img
 }

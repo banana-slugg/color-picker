@@ -18,12 +18,11 @@ func (c RGB) PrintValues() {
 }
 
 func (c RGB) DetermineColor() string {
-	thresh := 65
+	thresh := 50
 	r := c.Red
 	g := c.Green
 	b := c.Blue
 	max := util.Max(r, g, b)
-	avg := (r + g + b) / 3
 
 	rg := math.Abs(float64(r - g))
 	rb := math.Abs(float64(r - b))
@@ -32,24 +31,24 @@ func (c RGB) DetermineColor() string {
 	diff := util.Max(rg, rb, gb)
 
 	if diff <= 25 {
-		if max < uint8(thresh) || avg < uint8(thresh) {
+		if max < uint8(thresh) {
 			return "black"
 		} else {
 			return "white"
 		}
 	}
 
-	if r >= util.Max(g, b) {
+	if r > util.Max(g, b) {
 		return "red"
 	}
 
-	if g >= util.Max(r, b) {
+	if g > util.Max(r, b) {
 		return "green"
 	}
 
-	if b >= util.Max(r, g) {
+	if b > util.Max(r, g) {
 		return "blue"
 	}
 
-	return "black"
+	return "white"
 }
